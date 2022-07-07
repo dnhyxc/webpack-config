@@ -3,13 +3,44 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   entry: {
-    index: "./src/index.js",
+    index: "./src/index.tsx",
   },
   output: {
+    // 设置打包出来的 js 文件放置在 js 目录下
     filename: "js/[name]-bundle-[contenthash:6].js",
     path: path.resolve(__dirname, "../dist"),
     // 防止刷新页面后出现页面丢失报错！GET http://localhost:9000/home/js/bundle.js net::ERR_ABORTED 404 (Not Found)
     publicPath: "/",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx|ts|tsx)/,
+        exclude: /node_modules/,
+        use: ["babel-loader"],
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        loader: "url-loader",
+        options: {
+          name: "[name].[contenthash:8].[ext]",
+          outputPath: "assets/images",
+          limit: 8192,
+        },
+      },
+      {
+        test: /\.(ttf|woff|woff2|eot|otf)$/,
+        use: [
+          {
+            loader: "url-loader",
+            options: {
+              name: "[name].[contenthash:8].[ext]",
+              outputPath: "assets/fonts",
+            },
+          },
+        ],
+      },
+    ],
   },
   plugins: [
     /**
@@ -29,4 +60,11 @@ module.exports = {
       },
     }),
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "../src"),
+      "@styles": path.resolve(__dirname, "../src/styles"),
+    },
+    extensions: [".js", ".jsx", ".ts", ".tsx", ".json", ".less", ".scss"],
+  },
 };

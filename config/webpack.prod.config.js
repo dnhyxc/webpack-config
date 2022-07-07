@@ -1,6 +1,88 @@
 const { merge } = require("webpack-merge");
-const common = require("./webpack.common.js");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerWebpackPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
+const common = require("./webpack.common.config.js");
 
 module.exports = merge(common, {
   mode: "production",
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                localIdentName: "[name]__[local]--[hash:base64:5]",
+              },
+              importLoaders: 1,
+            },
+          },
+          "postcss-loader",
+        ],
+      },
+      {
+        test: /\.less$/,
+        exclude: [/node_modules/],
+        use: [
+          MiniCssExtractPlugin.loader,
+          // 配置less模块化导入
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                localIdentName: "[name]__[local]--[hash:base64:5]",
+              },
+              importLoaders: 1,
+            },
+          },
+          "postcss-loader",
+          "less-loader",
+        ],
+      },
+      {
+        test: /\.(sass|scss)$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          // 配置scss模块化导入
+          {
+            loader: "css-loader",
+            options: {
+              modules: {
+                mode: "local",
+                localIdentName: "[name]__[local]--[hash:base64:5]",
+              },
+              importLoaders: 1,
+            },
+          },
+          "postcss-loader",
+          "sass-loader",
+        ],
+      },
+    ],
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      // 设置打包出来css文件放置在 style 目录下
+      filename: "style/[name].[hash:6].css",
+    }),
+    new CssMinimizerWebpackPlugin(),
+  ],
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        parallel: true, // 多进程
+        extractComments: false, // 删除注释
+        terserOptions: {
+          compress: {
+            drop_console: true, // 去除log
+          },
+        },
+      }),
+    ],
+  },
 });
