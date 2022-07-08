@@ -44,6 +44,29 @@ module.exports = merge(common, {
         ],
       },
       {
+        test: /\.less$/,
+        include: [/node_modules/],
+        use: [
+          MiniCssExtractPlugin.loader,
+          "css-loader",
+          "postcss-loader",
+          {
+            loader: "less-loader",
+            options: {
+              lessOptions: {
+                sourceMap: true,
+                modifyVars: {
+                  "primary-color": "#1DA57A",
+                  "link-color": "#1DA57A",
+                  "border-radius-base": "2px",
+                },
+                javascriptEnabled: true,
+              },
+            },
+          },
+        ],
+      },
+      {
         test: /\.(sass|scss)$/,
         use: [
           MiniCssExtractPlugin.loader,
