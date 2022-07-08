@@ -1,11 +1,11 @@
-const { merge } = require("webpack-merge");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CssMinimizerWebpackPlugin = require("css-minimizer-webpack-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
-const common = require("./webpack.common.config.js");
+const { merge } = require('webpack-merge');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const common = require('./webpack.common.config.js');
 
 module.exports = merge(common, {
-  mode: "production",
+  mode: 'production',
   module: {
     rules: [
       {
@@ -13,15 +13,15 @@ module.exports = merge(common, {
         use: [
           MiniCssExtractPlugin.loader,
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: "[name]__[local]--[hash:base64:5]",
+                localIdentName: '[name]__[local]--[hash:base64:5]',
               },
               importLoaders: 1,
             },
           },
-          "postcss-loader",
+          'postcss-loader',
         ],
       },
       {
@@ -31,16 +31,16 @@ module.exports = merge(common, {
           MiniCssExtractPlugin.loader,
           // 配置less模块化导入
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: "[name]__[local]--[hash:base64:5]",
+                localIdentName: '[name]__[local]--[hash:base64:5]',
               },
               importLoaders: 1,
             },
           },
-          "postcss-loader",
-          "less-loader",
+          'postcss-loader',
+          'less-loader',
         ],
       },
       {
@@ -48,17 +48,17 @@ module.exports = merge(common, {
         include: [/node_modules/],
         use: [
           MiniCssExtractPlugin.loader,
-          "css-loader",
-          "postcss-loader",
+          'css-loader',
+          'postcss-loader',
           {
-            loader: "less-loader",
+            loader: 'less-loader',
             options: {
               lessOptions: {
                 sourceMap: true,
                 modifyVars: {
-                  "primary-color": "#1DA57A",
-                  "link-color": "#1DA57A",
-                  "border-radius-base": "2px",
+                  'primary-color': '#1DA57A',
+                  'link-color': '#1DA57A',
+                  'border-radius-base': '2px',
                 },
                 javascriptEnabled: true,
               },
@@ -72,17 +72,17 @@ module.exports = merge(common, {
           MiniCssExtractPlugin.loader,
           // 配置scss模块化导入
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               modules: {
-                mode: "local",
-                localIdentName: "[name]__[local]--[hash:base64:5]",
+                mode: 'local',
+                localIdentName: '[name]__[local]--[hash:base64:5]',
               },
               importLoaders: 1,
             },
           },
-          "postcss-loader",
-          "sass-loader",
+          'postcss-loader',
+          'sass-loader',
         ],
       },
     ],
@@ -90,7 +90,7 @@ module.exports = merge(common, {
   plugins: [
     new MiniCssExtractPlugin({
       // 设置打包出来css文件放置在 style 目录下
-      filename: "style/[name].[hash:6].css",
+      filename: 'style/[name].[hash:6].css',
     }),
     new CssMinimizerWebpackPlugin(),
   ],

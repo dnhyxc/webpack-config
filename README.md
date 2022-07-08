@@ -58,19 +58,19 @@ yarn add webpack-merge html-webpack-plugin -D
 webpack.common.config.js 文件初始内容：
 
 ```js
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
-    index: "./src/index.js",
+    index: './src/index.js',
   },
   output: {
     // 设置打包出来的 js 文件放置在 js 目录下
-    filename: "js/[name]-bundle-[contenthash:6].js",
-    path: path.resolve(__dirname, "../dist"),
+    filename: 'js/[name]-bundle-[contenthash:6].js',
+    path: path.resolve(__dirname, '../dist'),
     // 防止刷新页面后出现页面丢失报错！GET http://localhost:9000/home/js/bundle.js net::ERR_ABORTED 404 (Not Found)
-    publicPath: "/",
+    publicPath: '/',
   },
   plugins: [
     /**
@@ -82,11 +82,11 @@ module.exports = {
      *   - removeComments：去除注释
      */
     new HtmlWebpackPlugin({
-      template: "public/index.html",
-      filename: "index.html",
+      template: 'public/index.html',
+      filename: 'index.html',
       // 配置浏览器标签图标
-      favicon: "public/favicon.png",
-      inject: "body",
+      favicon: 'public/favicon.png',
+      inject: 'body',
       minify: {
         removeComments: true,
       },
@@ -98,9 +98,9 @@ module.exports = {
 - 在根目录中创建 src 文件夹，并在其中创建 `index.js` 文件：
 
 ```js
-const root = document.getElementById("root");
+const root = document.getElementById('root');
 console.log(root);
-root.textContent = "hello word";
+root.textContent = 'hello word';
 ```
 
 #### 生产打包配置
@@ -108,11 +108,11 @@ root.textContent = "hello word";
 webpack.prod.js 文件初始内容：
 
 ```js
-const { merge } = require("webpack-merge");
-const common = require("./webpack.common.config.js");
+const { merge } = require('webpack-merge');
+const common = require('./webpack.common.config.js');
 
 module.exports = merge(common, {
-  mode: "production",
+  mode: 'production',
 });
 ```
 
@@ -121,13 +121,13 @@ module.exports = merge(common, {
 webpack.dev.js 文件初始内容：
 
 ```js
-const { merge } = require("webpack-merge");
-const common = require("./webpack.common.config.js");
+const { merge } = require('webpack-merge');
+const common = require('./webpack.common.config.js');
 module.exports = merge(common, {
-  mode: "development",
+  mode: 'development',
   devServer: {
-    host: "localhost",
-    port: "9102",
+    host: 'localhost',
+    port: '9102',
   },
 });
 ```
@@ -168,8 +168,8 @@ yarn add babel-loader @babel/core @babel/preset-env @babel/preset-react @babel/p
 在 `module {}` 中的 `rules []` 配置中增加编译 js 及 jsx 的配置：
 
 ```js
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   // ...
@@ -180,12 +180,12 @@ module.exports = {
         exclude: /node_modules/,
         use: [
           {
-            loader: "babel-loader",
+            loader: 'babel-loader',
             options: {
-              presets: ["@babel/preset-env", "@babel/preset-react"],
+              presets: ['@babel/preset-env', '@babel/preset-react'],
               plugins: [
-                "@babel/plugin-transform-runtime",
-                "@babel/plugin-proposal-class-properties",
+                '@babel/plugin-transform-runtime',
+                '@babel/plugin-proposal-class-properties',
               ],
             },
           },
@@ -220,7 +220,7 @@ module.exports = {
       {
         test: /\.js(x?)$/,
         exclude: /node_modules/,
-        use: ["babel-loader"],
+        use: ['babel-loader'],
       },
     ],
   },
@@ -238,8 +238,8 @@ yarn add react react-dom
 在 src/index.js 文件中加入 react 相关内容：
 
 ```js
-import React from "react";
-import ReactDOM from "react-dom/client";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
 const App = () => {
   return (
@@ -249,7 +249,7 @@ const App = () => {
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
 ```
 
@@ -261,6 +261,8 @@ root.render(<App />);
 
 ```json
 yarn add @babel/preset-typescript @types/react @types/react-dom -D
+
+yarn add typescript
 ```
 
 #### 增加 tsconfig.json 文件
@@ -332,7 +334,7 @@ root.render(<App />);
 在 src 中新增 `App.tsx` 文件，内容如下：
 
 ```js
-import React from "react";
+import React from 'react';
 
 const App = () => {
   return (
@@ -352,7 +354,7 @@ export default App;
 ```js
 module.exports = {
   entry: {
-    index: "./src/index.tsx",
+    index: './src/index.tsx',
   },
   // ...
   module: {
@@ -360,7 +362,7 @@ module.exports = {
       {
         test: /\.(js|jsx|ts|tsx)/,
         exclude: /node_modules/,
-        use: ["babel-loader"],
+        use: ['babel-loader'],
       },
     ],
   },
@@ -370,19 +372,19 @@ module.exports = {
 在与 plugins 配置同级配置下增加 **resolve** 配置，增加了该配置，在引入文件时就不需要写后缀了。就如上述 `src/index.tsx` 中导入 `./App` 文件一样，可以将 `.tsx` 后缀省略。
 
 ```js
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
-    index: "./src/index.tsx",
+    index: './src/index.tsx',
   },
   // ...
   plugins: [
     // ...
   ],
   resolve: {
-    extensions: [".js", ".jsx", ".ts", ".tsx", ".json", ".less", ".scss"],
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.less', '.scss'],
   },
 };
 ```
@@ -406,32 +408,32 @@ yarn add style-loader css-loader less less-loader sass sass-loader -D
 在 webpack.common.config.js 文件中增加编译 css 的配置，如下：
 
 ```js
-const { merge } = require("webpack-merge");
-const common = require("./webpack.common.config.js");
+const { merge } = require('webpack-merge');
+const common = require('./webpack.common.config.js');
 module.exports = merge(common, {
-  mode: "development",
+  mode: 'development',
   module: {
     rules: [
       {
         test: /\.(css)$/,
         exclude: [/node_modules/],
-        use: ["style-loader", "css-loader", "postcss-loader"],
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
       },
       {
         test: /\.(less)$/,
         exclude: [/node_modules/],
-        use: ["style-loader", "css-loader", "less-loader", "postcss-loader"],
+        use: ['style-loader', 'css-loader', 'less-loader', 'postcss-loader'],
       },
       {
         test: /\.(scss)$/,
         exclude: [/node_modules/],
-        use: ["style-loader", "css-loader", "sass-loader", "postcss-loader"],
+        use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],
       },
     ],
   },
   devServer: {
-    host: "localhost",
-    port: "9102",
+    host: 'localhost',
+    port: '9102',
   },
 });
 ```
@@ -443,8 +445,8 @@ module.exports = merge(common, {
 - Home.tsx 文件内容如下：
 
 ```js
-import React from "react";
-import "./Home.css";
+import React from 'react';
+import './Home.css';
 
 interface IProps {}
 
@@ -483,9 +485,9 @@ export default Home;
 - App.tsx 内容：
 
 ```js
-import React from "react";
-import Home from "./Home";
-import "./App.less";
+import React from 'react';
+import Home from './Home';
+import './App.less';
 
 const App = () => {
   return (
@@ -560,29 +562,29 @@ yarn add postcss-loader autoprefixer -D
 
 ```js
 module.exports = merge(common, {
-  mode: "development",
+  mode: 'development',
   module: {
     rules: [
       {
         test: /\.(css)$/,
         exclude: [/node_modules/],
-        use: ["style-loader", "css-loader", "postcss-loader"],
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
       },
       {
         test: /\.(less)$/,
         exclude: [/node_modules/],
-        use: ["style-loader", "css-loader", "less-loader", "postcss-loader"],
+        use: ['style-loader', 'css-loader', 'less-loader', 'postcss-loader'],
       },
       {
         test: /\.(scss)$/,
         exclude: [/node_modules/],
-        use: ["style-loader", "css-loader", "sass-loader", "postcss-loader"],
+        use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],
       },
     ],
   },
   devServer: {
-    host: "localhost",
-    port: "9102",
+    host: 'localhost',
+    port: '9102',
   },
 });
 ```
@@ -598,11 +600,11 @@ module.exports = {
   plugins: {
     autoprefixer: {
       overrideBrowserslist: [
-        "Android 4.1",
-        "iOS 7.1",
-        "Chrome > 31",
-        "ff > 31",
-        "ie >= 8",
+        'Android 4.1',
+        'iOS 7.1',
+        'Chrome > 31',
+        'ff > 31',
+        'ie >= 8',
       ],
     },
   },
@@ -672,9 +674,9 @@ module: {
 将样式的引入方式由原来的 `import "./App.less"` 改为：`import styles from "./App.less"`
 
 ```js
-import React from "react";
-import Home from "./Home";
-import styles from "./App.less";
+import React from 'react';
+import Home from './Home';
+import styles from './App.less';
 
 const App = () => {
   return (
@@ -720,10 +722,10 @@ yarn add file-loader url-loader -D
 在 `assets/images` 文件夹下放入一张本地不图片，并在 `App.tsx` 中导入：
 
 ```js
-import React from "react";
-import Home from "./Home";
-import styles from "./App.less";
-import TEST_IMG from "./assets/images/test.jpg";
+import React from 'react';
+import Home from './Home';
+import styles from './App.less';
+import TEST_IMG from './assets/images/test.jpg';
 
 const App = () => {
   return (
@@ -756,11 +758,11 @@ yarn add mini-css-extract-plugin -D
 在生产打包配置中增加导入 `"mini-css-extract-plugin`：
 
 ```js
-const { merge } = require("webpack-merge");
-const common = require("./webpack.common.config.js");
+const { merge } = require('webpack-merge');
+const common = require('./webpack.common.config.js');
 
 module.exports = merge(common, {
-  mode: "production",
+  mode: 'production',
   module: {
     rules: [
       {
@@ -769,15 +771,15 @@ module.exports = merge(common, {
         use: [
           MiniCssExtractPlugin.loader,
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: "[name]__[local]--[hash:base64:5]",
+                localIdentName: '[name]__[local]--[hash:base64:5]',
               },
               importLoaders: 1,
             },
           },
-          "postcss-loader",
+          'postcss-loader',
         ],
       },
       {
@@ -787,16 +789,16 @@ module.exports = merge(common, {
           MiniCssExtractPlugin.loader,
           // 配置less模块化导入
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: "[name]__[local]--[hash:base64:5]",
+                localIdentName: '[name]__[local]--[hash:base64:5]',
               },
               importLoaders: 1,
             },
           },
-          "postcss-loader",
-          "less-loader",
+          'postcss-loader',
+          'less-loader',
         ],
       },
       {
@@ -806,17 +808,17 @@ module.exports = merge(common, {
           MiniCssExtractPlugin.loader,
           // 配置scss模块化导入
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               modules: {
-                mode: "local",
-                localIdentName: "[name]__[local]--[hash:base64:5]",
+                mode: 'local',
+                localIdentName: '[name]__[local]--[hash:base64:5]',
               },
               importLoaders: 1,
             },
           },
-          "postcss-loader",
-          "sass-loader",
+          'postcss-loader',
+          'sass-loader',
         ],
       },
     ],
@@ -864,14 +866,14 @@ yarn add css-minimizer-webpack-plugin -D
 在 `webpack.prod.config.js` 文件中导入 css-minimizer-webpack-plugin：
 
 ```js
-const CssMinimizerWebpackPlugin = require("css-minimizer-webpack-plugin");
+const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = merge(common, {
-  mode: "production",
+  mode: 'production',
   // ...
   plugins: [
     new MiniCssExtractPlugin({
-      filename: "style/[name].[hash:6].css",
+      filename: 'style/[name].[hash:6].css',
     }),
     new CssMinimizerWebpackPlugin(),
   ],
@@ -895,7 +897,7 @@ yarn add terser-webpack-plugin -D
 在 `webpack.prod.config.js` 文件中与 `plugins []` 同层级下增加 `optimization` 配置，具体如下：
 
 ```js
-const TerserPlugin = require("terser-webpack-plugin");
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   optimization: {
@@ -931,8 +933,8 @@ module.exports = {
 module.exports = {
   // ...
   externals: {
-    react: "React",
-    "react-dom": "ReactDOM",
+    react: 'React',
+    'react-dom': 'ReactDOM',
   },
 };
 ```
@@ -1011,7 +1013,7 @@ yarn add antd
 
 ```js
 module.exports = merge(common, {
-  mode: "development",
+  mode: 'development',
   module: {
     rules: [
       // ...
@@ -1022,37 +1024,37 @@ module.exports = merge(common, {
         test: /\.(less)$/,
         exclude: [/node_modules/],
         use: [
-          "style-loader",
+          'style-loader',
           // 配置less模块化导入
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: "[name]__[local]--[hash:base64:5]",
+                localIdentName: '[name]__[local]--[hash:base64:5]',
               },
               importLoaders: 1,
             },
           },
-          "postcss-loader",
-          "less-loader",
+          'postcss-loader',
+          'less-loader',
         ],
       },
       {
         test: /\.less$/,
         include: [/node_modules/],
         use: [
-          "style-loader",
-          "css-loader",
-          "postcss-loader",
+          'style-loader',
+          'css-loader',
+          'postcss-loader',
           {
-            loader: "less-loader",
+            loader: 'less-loader',
             options: {
               lessOptions: {
                 sourceMap: true,
                 modifyVars: {
-                  "primary-color": "#1DA57A",
-                  "link-color": "#1DA57A",
-                  "border-radius-base": "2px",
+                  'primary-color': '#1DA57A',
+                  'link-color': '#1DA57A',
+                  'border-radius-base': '2px',
                 },
                 javascriptEnabled: true,
               },
@@ -1074,7 +1076,7 @@ module.exports = merge(common, {
 
 ```js
 module.exports = merge(common, {
-  mode: "development",
+  mode: 'development',
   module: {
     rules: [
       // ...
@@ -1088,16 +1090,16 @@ module.exports = merge(common, {
           MiniCssExtractPlugin.loader,
           // 配置less模块化导入
           {
-            loader: "css-loader",
+            loader: 'css-loader',
             options: {
               modules: {
-                localIdentName: "[name]__[local]--[hash:base64:5]",
+                localIdentName: '[name]__[local]--[hash:base64:5]',
               },
               importLoaders: 1,
             },
           },
-          "postcss-loader",
-          "less-loader",
+          'postcss-loader',
+          'less-loader',
         ],
       },
       {
@@ -1105,17 +1107,17 @@ module.exports = merge(common, {
         include: [/node_modules/],
         use: [
           MiniCssExtractPlugin.loader,
-          "css-loader",
-          "postcss-loader",
+          'css-loader',
+          'postcss-loader',
           {
-            loader: "less-loader",
+            loader: 'less-loader',
             options: {
               lessOptions: {
                 sourceMap: true,
                 modifyVars: {
-                  "primary-color": "#1DA57A",
-                  "link-color": "#1DA57A",
-                  "border-radius-base": "2px",
+                  'primary-color': '#1DA57A',
+                  'link-color': '#1DA57A',
+                  'border-radius-base': '2px',
                 },
                 javascriptEnabled: true,
               },
@@ -1132,9 +1134,9 @@ module.exports = merge(common, {
 以上 antd 相关配置全部配置完毕之后，即可在 `Home.tsx` 中导入 antd 相关组件进行验证了：
 
 ```js
-import React from "react";
-import { Button } from "antd";
-import "./Home.css";
+import React from 'react';
+import { Button } from 'antd';
+import './Home.css';
 
 interface IProps {}
 
@@ -1156,7 +1158,23 @@ export default Home;
 #### 安装 eslint 相关插件
 
 ```json
-yarn add eslint eslint-loader -D
+yarn add eslint@latest eslint-loader eslint-webpack-plugin -D
+```
+
+#### 修改 webpack.common.config.js
+
+在 webpack.common.config.js 增加 `ESLintPlugin`：
+
+```js
+const ESLintPlugin = require('eslint-webpack-plugin');
+
+module.exports = {
+  // ...
+  plugins: [
+    // ...
+    new ESLintPlugin(),
+  ],
+};
 ```
 
 #### 新增 .eslintrc.json 文件
@@ -1173,4 +1191,118 @@ npx eslint --init
 yarn add eslint-config-airbnb eslint-loader eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react eslint-plugin-react-hooks @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
 ```
 
+#### 增加 .prettierrc 文件
 
+在根目录下新增一个 `.prettierrc` 文件，用于设置 Prettier 格式化规则，使格式化好的内容不与 eslint 校验产生冲突，具体可自行根据 eslint 错误提示增加，如下：设置保存时使用单引号：
+
+- .prettierrc 内容：
+
+```json
+{
+  "singleQuote": true
+}
+```
+
+#### 修改 .eslint.json 文件
+
+.eslint.json 文件增加如下设置，其余设置可根据 eslint 提示自行决定是否开启校验，`0` 表示关闭校验。
+
+```json
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["plugin:react/recommended", "airbnb"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "plugins": ["react", "@typescript-eslint"],
+  "rules": {
+    // 关闭 This line has a length of 129. Maximum allowed is 100.
+    "max-len": 0,
+    // 关闭 'webpack-merge' should be listed in the project's dependencies, not devDependencies.
+    "import/no-extraneous-dependencies": 0,
+    // 关闭 Unexpected use of file extension "js" for "./webpack.common.config.js"
+    "import/extensions": 0,
+    // 关闭 Function component is not a function declaration
+    "react/function-component-definition": [
+      2,
+      {
+        "namedComponents": "arrow-function",
+        "unnamedComponents": "arrow-function"
+      }
+    ],
+    // 关闭 JSX not allowed in files with extension '.tsx'
+    "react/jsx-filename-extension": [
+      "error",
+      { "extensions": [".ts", ".tsx", ".js", ".jsx"] }
+    ],
+    // 关闭 Unexpected block statement surrounding arrow body; move the returned value immediately after the `=>`.
+    "arrow-body-style": 0
+  }
+}
+```
+
+#### eslint 编写过程中校验 ts
+
+eslint 在代码编写时，默认不会对 ts 代码进行校验，如果需要在编写 ts 代码时，让 eslint 实时给出错误提示，需要进行如下设置：
+
+- 打开 vscode 设置，在搜索栏中搜索 `Eslint: validate`，搜索到之后，点击 `Edit in setting.json`。
+
+- 打开 Edit in setting.json 之后，在其中增加如下设置：
+
+```json
+{
+  // ...
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ]
+}
+```
+
+> 以上设置都设置完毕之后，关闭 vscode 重启，看是否有 eslint 错误提示。
+
+### 配置 husky
+
+#### 安装 husky
+
+husky 可用于提交代码时进行 eslint 校验，如果有 eslint 报错可阻止代码提交。
+
+```json
+yarn add husky -D
+```
+
+#### 生成 .husky 文件
+
+执行如下命令生成 `.husky` 文件，并在该文件夹下生成 `pre-commit` 文件：
+
+> 注意：执行 npm set-script prepare "husky install" 之前，必须要先使用 git init 创建 .git 文件，否则将会执行失败。
+
+```json
+npm set-script prepare "husky install"
+
+npm run prepare
+
+npx husky add .husky/pre-commit "npm test"
+```
+
+在 `package.json` 文件中增加如下两条脚本：
+
+```json
+{
+  "scripts": {
+    // ...
++   "prepare": "husky install",
++   "test": "npx eslint ./src ts,tsx,js,jsx"
+  }
+}
+```

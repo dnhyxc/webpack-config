@@ -1,6 +1,6 @@
-import React from "react";
-import { Button } from "antd";
-import "./Home.css";
+import React from 'react';
+import { Button } from 'antd';
+import './Home.css';
 
 interface IProps {}
 
