@@ -1443,6 +1443,12 @@ yarn add husky -D
 npx husky add .husky/pre-commit "npm test"
 ```
 
+自动修复部分 eslint 报错，只需要在上述脚本的末尾加上 `--fix` 即可：
+
+```js
+npx eslint ./src --ext ts,tsx,js,jsx --fix
+```
+
 ### webpack 其它配置
 
 #### 设置 webpack 控制台输出友好提示
