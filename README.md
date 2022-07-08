@@ -126,8 +126,14 @@ const common = require('./webpack.common.config.js');
 module.exports = merge(common, {
   mode: 'development',
   devServer: {
-    host: 'localhost',
-    port: '9102',
+    port: 9102,
+    compress: true,
+    // 设置 browserHistory 路由模式时，防止出现404的情况
+    historyApiFallback: true,
+    // 不将错误信息显示在浏览器中
+    client: {
+      overlay: false,
+    },
   },
 });
 ```
@@ -432,8 +438,14 @@ module.exports = merge(common, {
     ],
   },
   devServer: {
-    host: 'localhost',
-    port: '9102',
+    port: 9102,
+    compress: true,
+    // 设置 browserHistory 路由模式时，防止出现404的情况
+    historyApiFallback: true,
+    // 不将错误信息显示在浏览器中
+    client: {
+      overlay: false,
+    },
   },
 });
 ```
@@ -583,8 +595,14 @@ module.exports = merge(common, {
     ],
   },
   devServer: {
-    host: 'localhost',
-    port: '9102',
+    port: 9102,
+    compress: true,
+    // 设置 browserHistory 路由模式时，防止出现404的情况
+    historyApiFallback: true,
+    // 不将错误信息显示在浏览器中
+    client: {
+      overlay: false,
+    },
   },
 });
 ```
@@ -969,6 +987,37 @@ module.exports = {
 </html>
 ```
 
+### 缓存
+
+#### 缓存第三方库
+
+将第三方库（如 react）提取到单独的 vendor chunk 文件中是比较推荐的做法，这是因为它们很少像本地的源代码那样频繁修改。因此通过实现以上步骤，利用 client 的长效缓存机制，命中缓存来消除请求，并减少向 server 获取资源，同时还能保证 client 代码和 server 代码版本一致。
+
+#### 修改 webpack.common.config.js
+
+在 webpack.common.config.js 中，与 `externals` 配置同级下增加 `optimization` 配置：
+
+```js
+module.exports = {
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+  },
+  // 缓存配置
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor',
+          chunks: 'all',
+        },
+      },
+    },
+  },
+};
+```
+
 ### antd 按需加载
 
 #### 安装所需插件
@@ -1153,6 +1202,69 @@ export default Home;
 
 > 以上设置都设置完毕之后，重启项目，看 antd 按钮样式是否生效，颜色如果为**绿色**而不是蓝色，那就说明自定义主题及 antd 按需加载都生效了。
 
+### 配置路径别名
+
+#### 修改 webpack.common.config.js 文件
+
+在 webpack.common.config.js 中的 `resolve` 配置中增加 `alias` 配置：
+
+```js
+module.exports = {
+  // ...
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '../src'),
+      '@styles': path.resolve(__dirname, '../src/styles'),
+    },
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.less', '.scss'],
+  },
+};
+```
+
+#### 创建 src/components 文件
+
+在 src 目录下 创建 `components` 文件，并在其中创建一个 `Test` 文件夹，在 Test 文件夹下新建一个 `index.tsx` 文件，文件内容如下：
+
+```js
+import React from 'react';
+import { Button } from 'antd';
+
+interface IProps {}
+
+const Test: React.FC<IProps> = () => {
+  return <Button type="link">Test</Button>;
+};
+
+export default Test;
+```
+
+在 `App.tsx` 中导入 `Test` 组件：
+
+```js
+import React from 'react';
+// 通过路径别名导入 Test 组件
+import Test from '@/components/Test';
+import Home from './Home';
+import styles from './App.less';
+import TEST_IMG from './assets/images/test.jpg';
+
+const App = () => {
+  return (
+    <div className={styles.App}>
+      <h2 className={styles.h2}>hello word</h2>
+      <h2>hello TypeScript</h2>
+      <img src={TEST_IMG} alt="" />
+      <Home />
+      <Test />
+    </div>
+  );
+};
+
+export default App;
+```
+
+> 上述配置设置完毕之后，重启项目，看项目是否能正常运行。
+
 ### 配置 ESLint
 
 #### 安装 eslint 相关插件
@@ -1213,7 +1325,8 @@ yarn add eslint-config-airbnb eslint-loader eslint-plugin-import eslint-plugin-j
     "browser": true,
     "es2021": true
   },
-  "extends": ["plugin:react/recommended", "airbnb"],
+  // "plugin:import/typescript"：导入 ts|tsx 文件时，允许省略后缀
+  "extends": ["plugin:react/recommended", "airbnb", "plugin:import/typescript"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -1244,12 +1357,37 @@ yarn add eslint-config-airbnb eslint-loader eslint-plugin-import eslint-plugin-j
       { "extensions": [".ts", ".tsx", ".js", ".jsx"] }
     ],
     // 关闭 Unexpected block statement surrounding arrow body; move the returned value immediately after the `=>`.
-    "arrow-body-style": 0
+    "arrow-body-style": 0,
+    // 关闭结尾逗号校验
+    "comma-dangle": 0
   }
 }
 ```
 
-#### eslint 编写过程中校验 ts
+#### 解决路径别名 eslint 报错
+
+当通过路径别名引入组件时，eslint 会报 `Unable to resolve path to module`，为了解决该问题，需要借助如下插件：
+
+```json
+yarn add eslint-import-resolver-webpack -D
+```
+
+修改 `.eslint.json` 文件，增加一个与 `rules` 配置同级的 `settings` 配置：
+
+```json
+"settings": {
+  "import/parsers": {
+    "@typescript-eslint/parser": [".ts", ".tsx", ".jsx", ".js"]
+  },
+  "import/resolver": {
+    "webpack": {
+      "config": "./config/webpack.common.config.js"
+    }
+  }
+}
+```
+
+#### eslint 编写过程中校验 TS
 
 eslint 在代码编写时，默认不会对 ts 代码进行校验，如果需要在编写 ts 代码时，让 eslint 实时给出错误提示，需要进行如下设置：
 
@@ -1283,18 +1421,6 @@ yarn add husky -D
 
 #### 生成 .husky 文件
 
-执行如下命令生成 `.husky` 文件，并在该文件夹下生成 `pre-commit` 文件：
-
-> 注意：执行 npm set-script prepare "husky install" 之前，必须要先使用 git init 创建 .git 文件，否则将会执行失败。
-
-```json
-npm set-script prepare "husky install"
-
-npm run prepare
-
-npx husky add .husky/pre-commit "npm test"
-```
-
 在 `package.json` 文件中增加如下两条脚本：
 
 ```json
@@ -1302,7 +1428,69 @@ npx husky add .husky/pre-commit "npm test"
   "scripts": {
     // ...
 +   "prepare": "husky install",
-+   "test": "npx eslint ./src ts,tsx,js,jsx"
++   "test": "npx eslint ./src  --ext ts,tsx,js,jsx"
   }
 }
+```
+
+> 注意：`npx eslint ./src` 命令之后必须加上 `--ext ts,tsx,js,jsx` 配置，否则运行脚本时会出现找不到 src 的情况。
+
+执行如下命令生成 `.husky` 文件，并在该文件夹下生成 `pre-commit` 文件：
+
+> 注意：执行 npm set-script prepare "husky install" 之前，必须要先使用 git init 创建 .git 文件，否则将会执行失败。
+
+```json
+npx husky add .husky/pre-commit "npm test"
+```
+
+### webpack 其它配置
+
+#### 设置 webpack 控制台输出友好提示
+
+安装 `friendly-errors-webpack-plugin` 插件：
+
+```js
+yarn add friendly-errors-webpack-plugin -D
+```
+
+修改 webpack.common.config.js 文件，增加 `FriendlyErrorsWebpackPlugin` 配置：
+
+```js
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+
+module.exports = {
+  plugins: [
+    // ...
+    new FriendlyErrorsWebpackPlugin(),
+  ],
+
+  // 精简控制台编译输出信息
+  stats: {
+    modules: false,
+    children: false,
+    chunks: false,
+    chunkModules: false,
+  },
+};
+```
+
+#### webpack 编译进度条
+
+安装如插件：
+
+```json
+yarn add webpackbar -D
+```
+
+修改 webpack.common.config.js 文件，增加 `WebpackBar` plugins 配置：
+
+```js
+const WebpackBar = require('webpackbar');
+
+module.exports = {
+  plugins: [
+    // ...
+    new WebpackBar(),
+  ],
+};
 ```

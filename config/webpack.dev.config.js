@@ -77,9 +77,11 @@ module.exports = merge(common, {
     ],
   },
   devServer: {
-    host: 'localhost',
-    port: '9102',
-    // 关闭浏览器上出现的页面报错覆盖层
+    port: 9102,
+    compress: true,
+    // 设置 browserHistory 路由模式时，防止出现404的情况
+    historyApiFallback: true,
+    // 不将错误信息显示在浏览器中
     client: {
       overlay: false,
     },

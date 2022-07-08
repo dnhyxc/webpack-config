@@ -1,7 +1,8 @@
-import React from "react";
-import Home from "./Home";
-import styles from "./App.less";
-import TEST_IMG from "./assets/images/test.jpg";
+import React from 'react';
+import Test from '@/components/Test';
+import Home from './Home';
+import styles from './App.less';
+import TEST_IMG from './assets/images/test.jpg';
 
 const App = () => {
   return (
@@ -10,6 +11,7 @@ const App = () => {
       <h2>hello TypeScript</h2>
       <img src={TEST_IMG} alt="" />
       <Home />
+      <Test />
     </div>
   );
 };

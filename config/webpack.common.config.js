@@ -1,6 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+const WebpackBar = require('webpackbar');
 
 module.exports = {
   entry: {
@@ -63,7 +65,16 @@ module.exports = {
       },
     }),
     new ESLintPlugin(),
+    new FriendlyErrorsWebpackPlugin(),
+    new WebpackBar(),
   ],
+  // 精简控制台编译输出信息
+  stats: {
+    modules: false,
+    children: false,
+    chunks: false,
+    chunkModules: false,
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '../src'),
@@ -76,15 +87,15 @@ module.exports = {
     'react-dom': 'ReactDOM',
   },
   // 解决警告：You can limit the size of your bundles by using import() or require.ensure to lazy load some parts of your application.
-  // performance: {
-  //   hints: "warning",
-  //   //入口起点的最大体积
-  //   maxEntrypointSize: 50000000,
-  //   //生成文件的最大体积
-  //   maxAssetSize: 30000000,
-  //   //只给出 js 文件的性能提示
-  //   assetFilter: function (assetFilename) {
-  //     return assetFilename.endsWith(".js");
-  //   },
-  // },
+  performance: {
+    hints: 'warning',
+    // 入口起点的最大体积
+    maxEntrypointSize: 50000000,
+    // 生成文件的最大体积
+    maxAssetSize: 30000000,
+    // 只给出 js 文件的性能提示
+    assetFilter(assetFilename) {
+      return assetFilename.endsWith('.js');
+    },
+  },
 };

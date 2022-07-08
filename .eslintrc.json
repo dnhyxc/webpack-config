@@ -3,7 +3,7 @@
     "browser": true,
     "es2021": true
   },
-  "extends": ["plugin:react/recommended", "airbnb"],
+  "extends": ["plugin:react/recommended", "airbnb", "plugin:import/typescript"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
@@ -34,6 +34,20 @@
       { "extensions": [".ts", ".tsx", ".js", ".jsx"] }
     ],
     // 关闭 Unexpected block statement surrounding arrow body; move the returned value immediately after the `=>`.
-    "arrow-body-style": 0
+    "arrow-body-style": 0,
+    "import/no-unresolved": [2, { "commonjs": true, "amd": true }],
+    // 关闭结尾逗号校验
+    "comma-dangle": 0
+  },
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx", ".jsx", ".js"]
+    },
+    // 解决路径别名配置报错 Unable to resolve path to module
+    "import/resolver": {
+      "webpack": {
+        "config": "./config/webpack.common.config.js"
+      }
+    }
   }
 }
