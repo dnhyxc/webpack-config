@@ -1296,6 +1296,30 @@ module.exports = {
 npx eslint --init
 ```
 
+运行 `npx eslint --init` 之后，具体选项选择如下：
+
+- 第一步选择：> To check syntax, find problems, and enforce code style。
+
+- 第二步选择：> JavaScript modules (import/export)。
+
+- 第三步选择：> React。
+
+- 第四步选择：> Does your project use TypeScript? » No / Yes，注意：选择 yes。
+
+- 第五步选择：> Browser。
+
+- 第六步选择：> Use a popular style guide。
+
+- 第七步选择：> Airbnb: https://github.com/airbnb/javascript。
+
+- 第八步选择：> JSON。
+
+- 第九步选择：> Would you like to install them now? » No / Yes，注意：选择 yes。
+
+- 第十步选择：> Which package manager do you want to use? 自己根据情况选择 npm | yarn | pnpm。
+
+> 执行完上述步骤之后，等待所需包安装完即可。
+
 如果选择手动创建 `.eslintrc.json` 文件的话，需要自己手动安装如下插件：
 
 ```json
