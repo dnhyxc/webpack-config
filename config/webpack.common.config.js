@@ -35,16 +35,11 @@ module.exports = {
       },
       {
         test: /\.(ttf|woff|woff2|eot|otf)$/,
+        type: 'asset/resource',
         exclude: /node_modules/,
-        use: [
-          {
-            loader: 'url-loader',
-            options: {
-              name: '[name].[contenthash:8].[ext]',
-              outputPath: 'assets/fonts',
-            },
-          },
-        ],
+        generator: {
+          filename: 'font/[name]_[contenthash:8][ext]', // 指定打包后文件存放的文件夹和文件名
+        },
       },
     ],
   },
