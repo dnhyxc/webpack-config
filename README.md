@@ -1525,3 +1525,338 @@ module.exports = {
 ```
 
 > 相比条形进度条，个人更推荐百分比进度条。
+
+### webpack 完整代码
+
+#### webpack.common.config.js
+
+```js
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ESLintPlugin = require('eslint-webpack-plugin');
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+// const WebpackBar = require('webpackbar');
+
+module.exports = {
+  entry: {
+    index: './src/index.tsx',
+  },
+  output: {
+    // 设置打包出来的 js 文件放置在 js 目录下
+    filename: 'js/[name]-bundle-[contenthash:6].js',
+    path: path.resolve(__dirname, '../dist'),
+    // 防止刷新页面后出现页面丢失报错！GET http://localhost:9000/home/js/bundle.js net::ERR_ABORTED 404 (Not Found)
+    publicPath: '/',
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx|ts|tsx)/,
+        exclude: /node_modules/,
+        use: ['babel-loader'],
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        exclude: /node_modules/,
+        loader: 'url-loader',
+        options: {
+          name: '[name].[contenthash:8].[ext]',
+          outputPath: 'assets/images',
+          limit: 8192,
+        },
+      },
+      {
+        test: /\.(ttf|woff|woff2|eot|otf)$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              name: '[name].[contenthash:8].[ext]',
+              outputPath: 'assets/fonts',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  plugins: [
+    /**
+     * HtmlWebpackPlugin 配置说明：
+     *  template：基于我们自己定义的 html 文件为模板生成 html 文件
+     *  filename：打包之后的 html 文件名字
+     *  inject：将 js 文件注入到 body 最底部
+     *  minify：压缩 html 文件时的配置
+     *   - removeComments：去除注释
+     */
+    new HtmlWebpackPlugin({
+      template: 'public/index.html',
+      filename: 'index.html',
+      inject: 'body',
+      minify: {
+        removeComments: true,
+      },
+    }),
+    new ESLintPlugin(),
+    new FriendlyErrorsWebpackPlugin(),
+    // new WebpackBar(),
+    new webpack.ProgressPlugin({
+      activeModules: false,
+      entries: true,
+      modules: true,
+      modulesCount: 5000,
+      profile: false,
+      dependencies: true,
+      dependenciesCount: 10000,
+      percentBy: 'entries',
+    }),
+  ],
+  // 精简控制台编译输出信息
+  stats: {
+    modules: false,
+    children: false,
+    chunks: false,
+    chunkModules: false,
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, '../src'),
+      '@styles': path.resolve(__dirname, '../src/styles'),
+    },
+    extensions: ['.js', '.jsx', '.ts', '.tsx', '.json', '.less', '.scss'],
+  },
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+  },
+  // 解决警告：You can limit the size of your bundles by using import() or require.ensure to lazy load some parts of your application.
+  performance: {
+    hints: 'warning',
+    // 入口起点的最大体积
+    maxEntrypointSize: 50000000,
+    // 生成文件的最大体积
+    maxAssetSize: 30000000,
+    // 只给出 js 文件的性能提示
+    assetFilter(assetFilename) {
+      return assetFilename.endsWith('.js');
+    },
+  },
+};
+```
+
+#### webpack.dev.config.js
+
+```js
+const { merge } = require('webpack-merge');
+const common = require('./webpack.common.config.js');
+
+module.exports = merge(common, {
+  mode: 'development',
+  module: {
+    rules: [
+      {
+        test: /\.(css)$/,
+        exclude: [/node_modules/],
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
+      },
+      /**
+       * 该 less-loader 使用 exclude 排除 node_modules 中的组件库，只针对自己的代码开启 css 模块化
+       */
+      {
+        test: /\.(less)$/,
+        exclude: [/node_modules/],
+        use: [
+          'style-loader',
+          // 配置less模块化导入
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+              },
+              importLoaders: 1,
+            },
+          },
+          'postcss-loader',
+          'less-loader',
+        ],
+      },
+      {
+        test: /\.less$/,
+        include: [/node_modules/],
+        use: [
+          'style-loader',
+          'css-loader',
+          'postcss-loader',
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                sourceMap: true,
+                modifyVars: {
+                  'primary-color': '#1DA57A',
+                  'link-color': '#1DA57A',
+                  'border-radius-base': '2px',
+                },
+                javascriptEnabled: true,
+              },
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(scss)$/,
+        exclude: [/node_modules/],
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            // css 模块化配置
+            options: {
+              modules: {
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+              },
+              importLoaders: 1,
+            },
+          },
+          'postcss-loader',
+          'less-loader',
+        ],
+      },
+    ],
+  },
+  devServer: {
+    port: 9102,
+    compress: true,
+    // 设置 browserHistory 路由模式时，防止出现404的情况
+    historyApiFallback: true,
+    // 不将错误信息显示在浏览器中
+    client: {
+      overlay: false,
+    },
+  },
+});
+```
+
+#### webpack.prod.config.js
+
+```js
+const { merge } = require('webpack-merge');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const common = require('./webpack.common.config.js');
+
+module.exports = merge(common, {
+  mode: 'production',
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+              },
+              importLoaders: 1,
+            },
+          },
+          'postcss-loader',
+        ],
+      },
+      {
+        test: /\.less$/,
+        exclude: [/node_modules/],
+        use: [
+          MiniCssExtractPlugin.loader,
+          // 配置less模块化导入
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+              },
+              importLoaders: 1,
+            },
+          },
+          'postcss-loader',
+          'less-loader',
+        ],
+      },
+      {
+        test: /\.less$/,
+        include: [/node_modules/],
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'postcss-loader',
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                sourceMap: true,
+                modifyVars: {
+                  'primary-color': '#1DA57A',
+                  'link-color': '#1DA57A',
+                  'border-radius-base': '2px',
+                },
+                javascriptEnabled: true,
+              },
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(sass|scss)$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          // 配置scss模块化导入
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                mode: 'local',
+                localIdentName: '[name]__[local]--[hash:base64:5]',
+              },
+              importLoaders: 1,
+            },
+          },
+          'postcss-loader',
+          'sass-loader',
+        ],
+      },
+    ],
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      // 设置打包出来css文件放置在 style 目录下
+      filename: 'style/[name].[hash:6].css',
+    }),
+    new CssMinimizerWebpackPlugin(),
+  ],
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        parallel: true, // 多进程
+        extractComments: false, // 删除注释
+        terserOptions: {
+          compress: {
+            drop_console: true, // 去除log
+          },
+        },
+      }),
+    ],
+  },
+});
+```
+
+### 写在最后
+
+[项目 git 地址：https://github.com/dnhyxc/webpack-config](https://github.com/dnhyxc/webpack-config)
+
+文章到此就全部结束了，写的略微有点粗糙，请各位看官多多包含，如果有错误的地方，欢迎大家踊跃指正，在下感激不尽！
