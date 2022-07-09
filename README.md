@@ -1326,6 +1326,8 @@ npx eslint --init
 yarn add eslint-config-airbnb eslint-loader eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react eslint-plugin-react-hooks @typescript-eslint/eslint-plugin @typescript-eslint/parser -D
 ```
 
+> 上述两种方式，推荐使用 `npx eslint --init` 的方式自动生成 `.eslintrc.json` 文件，这样不容易遗漏安装所需要的插件。
+
 #### 增加 .prettierrc 文件
 
 在根目录下新增一个 `.prettierrc` 文件，用于设置 Prettier 格式化规则，使格式化好的内容不与 eslint 校验产生冲突，具体可自行根据 eslint 错误提示增加，如下：设置保存时使用单引号：
