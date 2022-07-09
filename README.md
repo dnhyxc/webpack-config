@@ -1241,7 +1241,6 @@ export default Test;
 在 `App.tsx` 中导入 `Test` 组件：
 
 ```js
-import React from 'react';
 // 通过路径别名导入 Test 组件
 import Test from '@/components/Test';
 import Home from './Home';

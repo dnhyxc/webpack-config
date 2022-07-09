@@ -1,4 +1,3 @@
-import React from 'react';
 import Test from '@/components/Test';
 import Home from './Home';
 import styles from './App.less';

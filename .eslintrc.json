@@ -37,7 +37,9 @@
     "arrow-body-style": 0,
     "import/no-unresolved": [2, { "commonjs": true, "amd": true }],
     // 关闭结尾逗号校验
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    // 关闭'React' must be in scope when using JSX 校验
+    "react/react-in-jsx-scope": 0
   },
   "settings": {
     "import/parsers": {
