@@ -1,8 +1,9 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const WebpackBar = require('webpackbar');
+// const WebpackBar = require('webpackbar');
 
 module.exports = {
   entry: {
@@ -66,7 +67,17 @@ module.exports = {
     }),
     new ESLintPlugin(),
     new FriendlyErrorsWebpackPlugin(),
-    new WebpackBar(),
+    // new WebpackBar(),
+    new webpack.ProgressPlugin({
+      activeModules: false,
+      entries: true,
+      modules: true,
+      modulesCount: 5000,
+      profile: false,
+      dependencies: true,
+      dependenciesCount: 10000,
+      percentBy: 'entries',
+    }),
   ],
   // 精简控制台编译输出信息
   stats: {

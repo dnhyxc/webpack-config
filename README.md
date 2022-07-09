@@ -1479,7 +1479,31 @@ module.exports = {
 };
 ```
 
-#### webpack 编译进度条
+#### webpack 编译百分比进度条
+
+该配置不需要安装任何插件，只需要修改 `webpack.common.config.js`，增加如下 `plugins` 配置即可：
+
+```js
+const webpack = require('webpack');
+
+module.exports = {
+  plugins: [
+    // ...
+    new webpack.ProgressPlugin({
+      activeModules: false,
+      entries: true,
+      modules: true,
+      modulesCount: 5000,
+      profile: false,
+      dependencies: true,
+      dependenciesCount: 10000,
+      percentBy: 'entries',
+    }),
+  ],
+};
+```
+
+#### webpack 编译条形进度条
 
 安装如插件：
 
@@ -1499,3 +1523,5 @@ module.exports = {
   ],
 };
 ```
+
+> 相比条形进度条，个人更推荐百分比进度条。
