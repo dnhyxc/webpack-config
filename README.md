@@ -868,6 +868,69 @@ export default App;
 
 > 设置完毕之后，重启项目看 `App.tex` 及 `App.less` 中导入的图片是否都能正常显示图片。
 
+#### 图片资源打包特别说明
+
+如果打包图片资源时，依旧使用 `url-loader` 或者 `file-loader` 进行打包时，会导致在样式中采用 `background: url('./xxx')` 的方式导入背景图片失效，只能通过 js 导入背景图片才能生效，具体打包配置如下：
+
+```js
+module: {
+  // ...
+  rules: [
+    // ...
+    {
+      test: /\.(png|jpe?g|gif)$/i,
+      exclude: /node_modules/,
+      loader: 'url-loader',
+      options: {
+        name: '[name].[contenthash:8].[ext]',
+        outputPath: 'assets/images',
+        limit: 8192,
+      },
+    },
+  ];
+}
+```
+
+`App.less` 样式配置如下：
+
+```css
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #efefef;
+  background: url('./assets/images/test.jpg');
+
+  .h2 {
+    color: skyblue;
+  }
+}
+```
+
+`App.tsx` 内容如下：
+
+```js
+import React from 'react';
+import Home from './Home';
+import styles from './App.less';
+import TEST_IMG from './assets/images/test.jpg';
+
+const App = () => {
+  return (
+    <div className={styles.App}>
+      <h2 className={styles.h2}>hello word</h2>
+      <h2>hello TypeScript</h2>
+      <img src={TEST_IMG} alt="" />
+      <Home />
+    </div>
+  );
+};
+
+export default App;
+```
+
+> 此时启动项目，发现只有在 `App.tsx` 中导入的图片才嫩正常显示，而在 `App.less` 中导入的图片并未生效，此时查看打包出来的图片，发现在样式中打包出来的图片显示是一个二进制的图片无法显示。因此，**在 webpack5 中尽量使用资源模块去编译图片等资源**。
+
 ### 打包生成单独 css 文件
 
 #### 安装 mini-css-extract-plugin
@@ -1417,7 +1480,7 @@ npx eslint --init
 
 - 第六步选择：> Use a popular style guide。
 
-- 第七步选择：> Airbnb: https://github.com/airbnb/javascript。
+- 第七步选择：> Airbnb。
 
 - 第八步选择：> JSON。
 
